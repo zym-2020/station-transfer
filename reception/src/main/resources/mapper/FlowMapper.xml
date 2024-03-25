@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="nnu.edu.reception.dao.FlowMapper">
+    <resultMap id="FlowMap" type="nnu.edu.reception.pojo.Flow">
+        <result column="stcd" property="stationId"/>
+        <result column="tm" property="time"/>
+        <result column="z" property="waterLevelValue"/>
+        <result column="q" property="flowValue"/>
+    </resultMap>
+
+    <insert id="insertValue">
+        insert or ignore into flow values
+        <foreach collection="flowList" item="item" separator=",">
+            (#{item.stationId}, #{item.time}, #{item.waterLevelValue}, #{item.flowValue})
+        </foreach>
+    </insert>
+
+    <insert id="createTable">
+        create table if not exists ${tableName}(
+           stcd text,
+           tm text,
+           z real,
+           q real,
+           primary key(stcd, tm)
+        )
+    </insert>
+
+    <select id="pageQuery" resultMap="FlowMap">
+        select * from flow where stcd = #{stationId} order by tm desc limit #{size} offset #{start}
+    </select>
+
+    <select id="selectAllDataByTime" resultMap="FlowMap">
+        select * from flow where tm &lt;= #{time}
+    </select>
+
+    <select id="selectDataByStationIdAndTime" resultMap="FlowMap">
+        select * from flow where stcd = #{stationId} and tm &lt;= #{time}
+    </select>
+
+    <select id="selectDataByStationIdAndStartTimeAndEndTime" resultMap="FlowMap">
+        select * from flow where stcd = #{stationId} and tm &gt;= #{startTime} and tm &lt;= #{endTime} order by tm desc
+    </select>
+
+    <select id="selectDataByStartTimeAndEndTime" resultMap="FlowMap">
+        select * from flow where tm &gt;= #{startTime} and tm &lt;= #{endTime}
+    </select>
+
+    <insert id="insertValueByTableName">
+        insert or ignore into ${tableName} values
+        <foreach collection="flowList" item="item" separator=",">
+            (#{item.stationId}, #{item.time}, #{item.waterLevelValue}, #{item.flowValue})
+        </foreach>
+    </insert>
+
+    <delete id="deleteDataByTime">
+        delete from flow where tm &lt;= #{time}
+    </delete>
+
+    <select id="queryAllStationId" resultType="java.lang.String">
+        select distinct stcd from flow
+    </select>
+</mapper>

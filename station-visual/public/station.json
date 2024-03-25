@@ -1,0 +1,30 @@
+{
+    "tide": [
+        {
+            "stationName": "江阴",
+            "stationId": "60116700CWF",
+            "lon": 120.3,
+            "lat": 31.95
+        },
+        {
+            "stationName": "六滧",
+            "stationId": "60117820",
+            "lon": 121.7,
+            "lat": 31.5
+        },
+        {
+            "stationName": "连兴港",
+            "stationId": "60117840",
+            "lon": 121.88,
+            "lat": 31.68
+        }
+    ],
+    "flow": [
+        {
+            "stationName": "徐六泾",
+            "stationId": "60117400",
+            "lon": 121.42,
+            "lat": 31.75
+        }
+    ]
+}

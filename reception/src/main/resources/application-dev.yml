@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: jdbc:sqlite:D:/zhuomian/reception.db
+    driver-class-name: org.sqlite.JDBC
+
+flowDir: D:/zhuomian/water/flow
+tideDir: D:/zhuomian/water/tide
