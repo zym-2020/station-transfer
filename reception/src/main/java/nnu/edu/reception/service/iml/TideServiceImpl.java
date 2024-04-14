@@ -87,4 +87,33 @@ public class TideServiceImpl implements TideService {
         sos.close();
         in.close();
     }
+
+    @Override
+    public void downloadAll(String stationId, HttpServletResponse response) throws IOException {
+        Path path = Paths.get(resourceDir, "temp", stationId + ".txt");
+        String tempPath = path.toString();
+        Files.createDirectories(path.getParent());
+        List<Tide> tideList = tideMapper.selectAllData(stationId);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempPath))) {
+            for (Tide tideObj : tideList) {
+                writer.write(tideObj.getTime() + "\t" + tideObj.getTideValue() + "\n");
+            }
+        } catch (IOException e) {
+            log.error("写入文件时出现错误：" + e.getMessage());
+        }
+        File file = new File(tempPath);
+        response.setContentType("application/octet-stream");
+        response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(stationId + ".txt", "UTF-8"));
+        response.addHeader("Content-Length", "" + file.length());
+        InputStream in = new FileInputStream(file);
+        ServletOutputStream sos = response.getOutputStream();
+        byte[] b = new byte[1024];
+        int len;
+        while((len = in.read(b)) > 0) {
+            sos.write(b, 0, len);
+        }
+        sos.flush();
+        sos.close();
+        in.close();
+    }
 }

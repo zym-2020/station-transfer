@@ -25,6 +25,10 @@
         )
     </insert>
 
+    <select id="selectAllData" resultMap="FlowMap">
+        select * from flow where stcd = #{stationId}
+    </select>
+
     <select id="pageQuery" resultMap="FlowMap">
         select * from flow where stcd = #{stationId} order by tm desc limit #{size} offset #{start}
     </select>

@@ -23,6 +23,10 @@
         )
     </insert>
 
+    <select id="selectAllData" resultMap="TideMap">
+        select * from tide where stcd = #{stationId}
+    </select>
+
     <select id="pageQuery" resultMap="TideMap">
         select * from tide where stcd = #{stationId} order by tm desc limit #{size} offset #{start}
     </select>

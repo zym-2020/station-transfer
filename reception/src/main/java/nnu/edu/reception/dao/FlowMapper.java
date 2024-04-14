@@ -21,6 +21,8 @@ public interface FlowMapper {
 
     void createTable(@Param("tableName") String tableName);
 
+    List<Flow> selectAllData(@Param("stationId") String stationId);
+
     List<Flow> pageQuery(@Param("stationId") String stationId, @Param("size") int size, @Param("start") int start);
 
     List<Flow> selectAllDataByTime(@Param("time") String time);

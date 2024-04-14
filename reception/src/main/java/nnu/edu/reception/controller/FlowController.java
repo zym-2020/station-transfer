@@ -44,4 +44,9 @@ public class FlowController {
     public void download(@PathVariable String stationId, HttpServletResponse response) throws IOException {
         flowService.download(stationId, response);
     }
+
+    @RequestMapping(value = "/downloadAll/{station}", method = RequestMethod.GET)
+    public void downloadAll(@PathVariable String station, HttpServletResponse response) throws IOException {
+        flowService.downloadAll(station, response);
+    }
 }

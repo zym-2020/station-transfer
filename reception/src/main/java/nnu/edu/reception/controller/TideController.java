@@ -45,4 +45,9 @@ public class TideController {
     public void download(@PathVariable String stationId, HttpServletResponse response) throws IOException {
         tideService.download(stationId, response);
     }
+
+    @RequestMapping(value = "/downloadAll/{stationId}", method = RequestMethod.GET)
+    public void downloadAll(@PathVariable String stationId, HttpServletResponse response) throws IOException {
+        tideService.downloadAll(stationId, response);
+    }
 }

@@ -20,6 +20,8 @@ public interface TideMapper {
 
     void createTable(@Param("tableName") String tableName);
 
+    List<Tide> selectAllData(@Param("stationId") String stationId);
+
     List<Tide> pageQuery(@Param("stationId") String stationId, @Param("size") int size, @Param("start") int start);
 
     List<Tide> selectAllDataByTime(@Param("time") String time);

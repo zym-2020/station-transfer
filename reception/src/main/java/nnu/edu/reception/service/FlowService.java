@@ -23,4 +23,6 @@ public interface FlowService {
     List<Flow> pageQuery(String stationId, int page, int size);
 
     void download(String stationId, HttpServletResponse response) throws IOException;
+
+    void downloadAll(String stationId, HttpServletResponse response) throws IOException;
 }

@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -72,12 +70,21 @@ public class TimeTask {
                     log.error("写入文件时出现错误：" + e.getMessage());
                 }
                 if (tide.getBoolean("updateWaterLevelFile")) {
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(Paths.get(tide.getString("waterLevelAddress"),tide.getString("stationName") + tide.getString("endTime") + ".txt").toString()))) {
+                    try (PrintWriter writer = new PrintWriter(new FileOutputStream(Paths.get(resourceDir, tide.getString("stationName") + ".txt").toString(), true))) {
                         for (Tide tideObj : tideList) {
                             writer.write(tideObj.getTime() + "\t" + tideObj.getTideValue() + "\n");
                         }
                     } catch (IOException e) {
-                        log.error("写入文件时出现错误：" + e.getMessage());
+                        log.error("追加文件时出现错误：" + e.getMessage());
+                    }
+                    try (FileInputStream fis = new FileInputStream(Paths.get(resourceDir, tide.getString("stationName") + ".txt").toString()); FileOutputStream fos = new FileOutputStream(Paths.get(tide.getString("waterLevelAddress"), tide.getString("stationName") + tide.getString("endTime") + ".txt").toString())) {
+                        int bytesRead;
+                        byte[] buffer = new byte[1024];
+                        while ((bytesRead = fis.read(buffer)) != -1) {
+                            fos.write(buffer, 0, bytesRead);
+                        }
+                    } catch (IOException e) {
+                        log.error("复制文件时发生错误：" + e.getMessage());
                     }
                 }
             }
@@ -103,12 +110,21 @@ public class TimeTask {
                     log.error("写入文件时出现错误：" + e.getMessage());
                 }
                 if (flow.getBoolean("updateWaterLevelFile")) {
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(Paths.get(flow.getString("waterLevelAddress"), flow.getString("stationName") + flow.getString("endTime") + ".txt").toString()))) {
+                    try (PrintWriter writer = new PrintWriter(new FileOutputStream(Paths.get(resourceDir, flow.getString("stationName") + ".txt").toString(), true))) {
                         for (Flow flowObj : flowList) {
                             writer.write(flowObj.getTime() + "\t" + flowObj.getWaterLevelValue() + "\t" + flowObj.getFlowValue() + "\n");
                         }
                     } catch (IOException e) {
-                        log.error("写入文件时出现错误：" + e.getMessage());
+                        log.error("追加文件时出现错误：" + e.getMessage());
+                    }
+                    try (FileInputStream fis = new FileInputStream(Paths.get(resourceDir, flow.getString("stationName") + ".txt").toString()); FileOutputStream fos = new FileOutputStream(Paths.get(flow.getString("waterLevelAddress"), flow.getString("stationName") + flow.getString("endTime") + ".txt").toString())) {
+                        int bytesRead;
+                        byte[] buffer = new byte[1024];
+                        while ((bytesRead = fis.read(buffer)) != -1) {
+                            fos.write(buffer, 0, bytesRead);
+                        }
+                    } catch (IOException e) {
+                        log.error("复制文件时发生错误：" + e.getMessage());
                     }
                 }
             }
