@@ -5,3 +5,4 @@ spring:
 
 flowDir: /run/media/ps/c4cc18ff-fa71-43fb-8a59-06bc37d5c482/water/flow
 tideDir: /run/media/ps/c4cc18ff-fa71-43fb-8a59-06bc37d5c482/water/tide
+resourceDir: /run/media/ps/c4cc18ff-fa71-43fb-8a59-06bc37d5c482/water/resource

@@ -8,6 +8,8 @@ import nnu.edu.reception.service.TideService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -37,5 +39,10 @@ public class TideController {
     @RequestMapping(value = "/pageQuery/{stationId}/{page}/{size}", method = RequestMethod.GET)
     public JsonResult pageQuery(@PathVariable String stationId, @PathVariable int page, @PathVariable int size) {
         return ResultUtils.success(tideService.pageQuery(stationId, page, size));
+    }
+
+    @RequestMapping(value = "/download/now/{stationId}", method = RequestMethod.GET)
+    public void download(@PathVariable String stationId, HttpServletResponse response) throws IOException {
+        tideService.download(stationId, response);
     }
 }

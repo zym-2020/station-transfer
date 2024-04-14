@@ -35,8 +35,12 @@
         select * from tide where stcd = #{stationId} and tm &lt;= #{time}
     </select>
 
+    <select id="selectDataAfterTime" resultMap="TideMap">
+        select * from tide where stcd = #{stationId} and tm &gt;= #{time}
+    </select>
+
     <select id="selectDataByStationIdAndStartTimeAndEndTime" resultMap="TideMap">
-        select * from tide where stcd = #{stationId} and tm &gt;= #{startTime} and tm &lt;= #{endTime} order by tm desc
+        select * from tide where stcd = #{stationId} and tm &gt;= #{startTime} and tm &lt;= #{endTime}
     </select>
 
     <select id="selectDataByStartTimeAndEndTime" resultMap="TideMap">

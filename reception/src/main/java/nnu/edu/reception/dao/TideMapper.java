@@ -26,6 +26,8 @@ public interface TideMapper {
 
     List<Tide> selectDataByStationIdAndTime(@Param("stationId") String stationId, @Param("time") String time);
 
+    List<Tide> selectDataAfterTime(@Param("stationId") String stationId, @Param("time") String time);
+
     List<Tide> selectDataByStationIdAndStartTimeAndEndTime(@Param("stationId") String stationId, @Param("startTime") String startTime, @Param("endTime") String endTime);
 
     List<Tide> selectDataByStartTimeAndEndTime(@Param("startTime") String startTime, @Param("endTime") String endTime);

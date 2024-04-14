@@ -33,12 +33,16 @@
         select * from flow where tm &lt;= #{time}
     </select>
 
+    <select id="selectDataAfterTime" resultMap="FlowMap">
+        select * from flow where stcd = #{stationId} and tm &gt;= #{time}
+    </select>
+
     <select id="selectDataByStationIdAndTime" resultMap="FlowMap">
         select * from flow where stcd = #{stationId} and tm &lt;= #{time}
     </select>
 
     <select id="selectDataByStationIdAndStartTimeAndEndTime" resultMap="FlowMap">
-        select * from flow where stcd = #{stationId} and tm &gt;= #{startTime} and tm &lt;= #{endTime} order by tm desc
+        select * from flow where stcd = #{stationId} and tm &gt;= #{startTime} and tm &lt;= #{endTime}
     </select>
 
     <select id="selectDataByStartTimeAndEndTime" resultMap="FlowMap">

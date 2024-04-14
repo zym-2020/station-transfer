@@ -5,3 +5,4 @@ spring:
 
 flowDir: D:/zhuomian/water/flow
 tideDir: D:/zhuomian/water/tide
+resourceDir: E:/github/station-transfer/resource

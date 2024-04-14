@@ -2,6 +2,10 @@ package nnu.edu.reception.service;
 
 import nnu.edu.reception.pojo.Flow;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
@@ -17,4 +21,6 @@ public interface FlowService {
     List<Flow> getData(String stationId, String startTime, String endTime);
 
     List<Flow> pageQuery(String stationId, int page, int size);
+
+    void download(String stationId, HttpServletResponse response) throws IOException;
 }

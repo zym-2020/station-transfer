@@ -1,6 +1,7 @@
 package nnu.edu.reception.dao;
 
 import nnu.edu.reception.pojo.Flow;
+import nnu.edu.reception.pojo.Tide;
 import org.apache.ibatis.annotations.Param;
 
 import org.springframework.stereotype.Repository;
@@ -25,6 +26,8 @@ public interface FlowMapper {
     List<Flow> selectAllDataByTime(@Param("time") String time);
 
     List<Flow> selectDataByStationIdAndTime(@Param("stationId") String stationId, @Param("time") String time);
+
+    List<Flow> selectDataAfterTime(@Param("stationId") String stationId, @Param("time") String time);
 
     List<Flow> selectDataByStationIdAndStartTimeAndEndTime(@Param("stationId") String stationId, @Param("startTime") String startTime, @Param("endTime") String endTime);
 

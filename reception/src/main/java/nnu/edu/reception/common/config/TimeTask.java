@@ -1,6 +1,9 @@
 package nnu.edu.reception.common.config;
 
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import nnu.edu.reception.common.utils.FileUtil;
 import nnu.edu.reception.dao.FlowMapper;
 import nnu.edu.reception.dao.TideMapper;
 import nnu.edu.reception.pojo.Flow;
@@ -16,8 +19,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,37 +48,78 @@ public class TimeTask {
     @Value("${tideDir}")
     String tideDir;
 
-    @Scheduled(cron = "0 0 8 * * ?")
-    public void database2file() throws IOException {
-        LocalDate currentDate = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String endTime = currentDate.format(formatter);
-        String startTime = currentDate.minusDays(1).format(formatter);
-        List<String> flowStationIds = flowMapper.queryAllStationId();
-        List<String> tideStationIds = tideMapper.queryAllStationId();
-        for (String stationId : flowStationIds) {
-            List<Flow> flowList = flowMapper.selectDataByStationIdAndStartTimeAndEndTime(stationId, startTime, endTime);
-            Path path = Paths.get(flowDir, stationId, startTime + ".txt");
-            Files.createDirectories(path.getParent());
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(path.toString()))) {
-                for (Flow flow : flowList) {
-                    writer.write(flow.getTime() + "\t" + flow.getWaterLevelValue() + "\t" + flow.getFlowValue() + "\n");
+    @Value("${resourceDir}")
+    String resourceDir;
+
+    @Scheduled(cron = "0 0 15 * * ?")
+    public void database2file() throws IOException, ParseException {
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String cachePath = Paths.get(resourceDir, "cache.json").toString();
+        JSONObject cacheJson = FileUtil.readJson(cachePath);
+        JSONArray tides = cacheJson.getJSONArray("tide");
+        for (int i = 0; i < tides.size(); i++) {
+            JSONObject tide = tides.getJSONObject(i);
+            List<Tide> tideList = tideMapper.selectDataByStationIdAndStartTimeAndEndTime(tide.getString("stationId"), tide.getString("startTime"), tide.getString("endTime"));
+            if (tideList.size() > 0) {
+                Path path = Paths.get(tideDir, tide.getString("stationId"), tide.getString("stationName") + tide.getString("endTime") + ".txt");
+                Files.createDirectories(path.getParent());
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(path.toString()))) {
+                    for (Tide tideObj : tideList) {
+                        writer.write(tideObj.getTime() + "\t" + tideObj.getTideValue() + "\n");
+                    }
+                } catch (IOException e) {
+                    log.error("写入文件时出现错误：" + e.getMessage());
                 }
-            } catch (IOException e) {
-                log.error("写入文件时出现错误：" + e.getMessage());
-            }
-        }
-        for (String stationId : tideStationIds) {
-            List<Tide> tideList = tideMapper.selectDataByStationIdAndStartTimeAndEndTime(stationId, startTime, endTime);
-            Path path = Paths.get(tideDir, stationId, startTime + ".txt");
-            Files.createDirectories(path.getParent());
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(path.toString()))) {
-                for (Tide flow : tideList) {
-                    writer.write(flow.getTime() + "\t" + flow.getTideValue() + "\n");
+                if (tide.getBoolean("updateWaterLevelFile")) {
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(Paths.get(tide.getString("waterLevelAddress"),tide.getString("stationName") + tide.getString("endTime") + ".txt").toString()))) {
+                        for (Tide tideObj : tideList) {
+                            writer.write(tideObj.getTime() + "\t" + tideObj.getTideValue() + "\n");
+                        }
+                    } catch (IOException e) {
+                        log.error("写入文件时出现错误：" + e.getMessage());
+                    }
                 }
-            } catch (IOException e) {
-                log.error("写入文件时出现错误：" + e.getMessage());
             }
+            tide.put("startTime", tide.getString("endTime"));
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(dateFormat.parse(tide.getString("endTime")));
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            Date nextDay = calendar.getTime();
+            tide.put("endTime", dateFormat.format(nextDay));
         }
+        JSONArray flows = cacheJson.getJSONArray("flow");
+        for (int i = 0; i < flows.size(); i++) {
+            JSONObject flow = flows.getJSONObject(i);
+            List<Flow> flowList = flowMapper.selectDataByStationIdAndStartTimeAndEndTime(flow.getString("stationId"), flow.getString("startTime"), flow.getString("endTime"));
+            if (flowList.size() > 0) {
+                Path path = Paths.get(flowDir, flow.getString("stationId"), flow.getString("stationName") + flow.getString("endTime") + ".txt");
+                Files.createDirectories(path.getParent());
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(path.toString()))) {
+                    for (Flow flowObj : flowList) {
+                        writer.write(flowObj.getTime() + "\t" + flowObj.getWaterLevelValue() + "\t" + flowObj.getFlowValue() + "\n");
+                    }
+                } catch (IOException e) {
+                    log.error("写入文件时出现错误：" + e.getMessage());
+                }
+                if (flow.getBoolean("updateWaterLevelFile")) {
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(Paths.get(flow.getString("waterLevelAddress"), flow.getString("stationName") + flow.getString("endTime") + ".txt").toString()))) {
+                        for (Flow flowObj : flowList) {
+                            writer.write(flowObj.getTime() + "\t" + flowObj.getWaterLevelValue() + "\t" + flowObj.getFlowValue() + "\n");
+                        }
+                    } catch (IOException e) {
+                        log.error("写入文件时出现错误：" + e.getMessage());
+                    }
+                }
+            }
+            flow.put("startTime", flow.getString("endTime"));
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(dateFormat.parse(flow.getString("endTime")));
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            Date nextDay = calendar.getTime();
+            flow.put("endTime", dateFormat.format(nextDay));
+        }
+        FileUtil.writeJson(cachePath, cacheJson);
+
     }
 }
