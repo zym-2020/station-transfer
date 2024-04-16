@@ -49,8 +49,8 @@ public class TimeTask {
     @Value("${resourceDir}")
     String resourceDir;
 
-    @Scheduled(cron = "0 0 15 * * ?")
-    public void database2file() throws IOException, ParseException {
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void database2tideFile() throws IOException, ParseException {
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String cachePath = Paths.get(resourceDir, "cache.json").toString();
@@ -95,6 +95,16 @@ public class TimeTask {
             Date nextDay = calendar.getTime();
             tide.put("endTime", dateFormat.format(nextDay));
         }
+
+        FileUtil.writeJson(cachePath, cacheJson);
+
+    }
+
+    @Scheduled(cron = "0 0 15 * * ?")
+    public void database2flowFile() throws IOException, ParseException {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String cachePath = Paths.get(resourceDir, "cache.json").toString();
+        JSONObject cacheJson = FileUtil.readJson(cachePath);
         JSONArray flows = cacheJson.getJSONArray("flow");
         for (int i = 0; i < flows.size(); i++) {
             JSONObject flow = flows.getJSONObject(i);
@@ -135,7 +145,6 @@ public class TimeTask {
             Date nextDay = calendar.getTime();
             flow.put("endTime", dateFormat.format(nextDay));
         }
-        FileUtil.writeJson(cachePath, cacheJson);
-
     }
+
 }
