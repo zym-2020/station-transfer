@@ -145,6 +145,7 @@ public class TimeTask {
             Date nextDay = calendar.getTime();
             flow.put("endTime", dateFormat.format(nextDay));
         }
+        FileUtil.writeJson(cachePath, cacheJson);
     }
 
 }
