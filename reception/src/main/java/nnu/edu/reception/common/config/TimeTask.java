@@ -49,7 +49,7 @@ public class TimeTask {
     @Value("${resourceDir}")
     String resourceDir;
 
-    @Scheduled(cron = "0 30 * * * ?")
+    @Scheduled(cron = "0 0 3 * * ?")
     public void database2tideFile() throws IOException, ParseException {
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -100,7 +100,7 @@ public class TimeTask {
 
     }
 
-    @Scheduled(cron = "0 0 15 * * ?")
+    @Scheduled(cron = "0 0 3 * * ?")
     public void database2flowFile() throws IOException, ParseException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String cachePath = Paths.get(resourceDir, "cache.json").toString();
