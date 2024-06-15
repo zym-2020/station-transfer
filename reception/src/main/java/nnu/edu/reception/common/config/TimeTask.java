@@ -49,7 +49,7 @@ public class TimeTask {
     @Value("${resourceDir}")
     String resourceDir;
 
-    @Scheduled(cron = "0 8 * * * ?")
+    @Scheduled(cron = "0 30 * * * ?")
     public void database2tideFile() throws IOException, ParseException {
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
